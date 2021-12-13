@@ -1,6 +1,6 @@
-import kotlinx.cinterop.*
-import kotlinx.cinterop.nativeHeap.alloc
-import platform.posix.poll
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import sdl2.*
 import kotlin.system.exitProcess
 
@@ -13,8 +13,6 @@ fun main() {
         exitProcess(-1)
     }
 
-    println("SDL Kotlin/Native")
-
     var window = SDL_CreateWindow(
         "SDL Kotlin/Native",
         SDL_WINDOWPOS_UNDEFINED.toInt(),
@@ -25,21 +23,22 @@ fun main() {
     )
 
     memScoped {
-        var event = alloc<SDL_Event>()
-        println("Created event")
-        var pollStatus = SDL_PollEvent(event.ptr)
-        println("Got first event")
-        while (pollStatus > 0) {
-            println("entering loop pollStatus=${pollStatus} event.type=${event.type}")
+        while (true) {
+            var event = alloc<SDL_Event>()
+
+            var pollStatus = SDL_PollEvent(event.ptr)
+
+            while (pollStatus == 0) {
+                SDL_Delay(100)
+                pollStatus = SDL_PollEvent(event.ptr)
+            }
+
             when (event.type) {
                 SDL_QUIT -> break
                 SDL_MOUSEBUTTONUP -> break
                 SDL_KEYUP -> break
             }
-            pollStatus = SDL_PollEvent(event.ptr)
-            println("Got next event")
         }
-        println("Exited loop pollStatus=${pollStatus}")
     }
 
     SDL_DestroyWindow(window)
