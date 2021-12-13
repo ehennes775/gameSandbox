@@ -2,5 +2,8 @@ headers = SDL2/SDL.h
 headerFilter = SDL2/**
 package = sdl2
 
+compilerOpts.linux = --verbose -I/usr/include -I/usr/include/SDL2 -I/usr/include/x86_64-linux-gnu
+linkerOpts.linux = -L/usr/lib/x86_64-linux-gnu -lSDL2
+
 compilerOpts.osx = --verbose -F /Library/Frameworks -framework SDL2
 linkerOpts.osx = -framework SDL2
